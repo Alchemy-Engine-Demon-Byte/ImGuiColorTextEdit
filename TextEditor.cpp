@@ -73,6 +73,11 @@ void TextEditor::SetPalette(const Palette & aValue)
 	mPaletteBase = aValue;
 }
 
+void TextEditor::SetLineColor(int aLine, PaletteIndex aColor)
+{
+    mLineColorOverrides[aLine] = aColor;
+}
+
 std::string TextEditor::GetText(const Coordinates & aStart, const Coordinates & aEnd) const
 {
 	std::string result;
@@ -1009,13 +1014,17 @@ void TextEditor::Render()
 			}
 
 			// Render colorized text
-			auto prevColor = line.empty() ? mPalette[(int)PaletteIndex::Default] : GetGlyphColor(line[0]);
+            ImU32 overrideColor = 0;
+            if (mLineColorOverrides.count(lineNo))
+                overrideColor = mPalette[(int)mLineColorOverrides[lineNo]];
+
+			auto prevColor = overrideColor ? overrideColor : (line.empty() ? mPalette[(int)PaletteIndex::Default] : GetGlyphColor(line[0]));
 			ImVec2 bufferOffset;
 
 			for (int i = 0; i < line.size();)
 			{
 				auto& glyph = line[i];
-				auto color = GetGlyphColor(glyph);
+				auto color = overrideColor ? overrideColor : GetGlyphColor(glyph);
 
 				if ((color != prevColor || glyph.mChar == '\t' || glyph.mChar == ' ') && !mLineBuffer.empty())
 				{
@@ -2006,7 +2015,7 @@ const TextEditor::Palette & TextEditor::GetDarkPalette()
 {
 	const static Palette p = { {
 			0xff7f7f7f,	// Default
-			0xffd69c56,	// Keyword	
+			0xffd69c56,	// Keyword
 			0xff00ff00,	// Number
 			0xff7070e0,	// String
 			0xff70a0e0, // Char literal
@@ -2034,7 +2043,7 @@ const TextEditor::Palette & TextEditor::GetLightPalette()
 {
 	const static Palette p = { {
 			0xff7f7f7f,	// None
-			0xffff0c06,	// Keyword	
+			0xffff0c06,	// Keyword
 			0xff008000,	// Number
 			0xff2020a0,	// String
 			0xff304070, // Char literal
@@ -2062,7 +2071,7 @@ const TextEditor::Palette & TextEditor::GetRetroBluePalette()
 {
 	const static Palette p = { {
 			0xff00ffff,	// None
-			0xffffff00,	// Keyword	
+			0xffffff00,	// Keyword
 			0xff00ff00,	// Number
 			0xff808000,	// String
 			0xff808000, // Char literal

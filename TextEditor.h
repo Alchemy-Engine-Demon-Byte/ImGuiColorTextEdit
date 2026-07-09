@@ -218,7 +218,7 @@ public:
 	Coordinates GetCursorPosition() const { return GetActualCursorCoordinates(); }
 	void SetCursorPosition(const Coordinates& aPosition);
 
-	inline void SetHandleMouseInputs    (bool aValue){ mHandleMouseInputs    = aValue;}
+	void SetHandleMouseInputs    (bool aValue){ mHandleMouseInputs    = aValue;}
 	inline bool IsHandleMouseInputsEnabled() const { return mHandleKeyboardInputs; }
 
 	inline void SetHandleKeyboardInputs (bool aValue){ mHandleKeyboardInputs = aValue;}
@@ -229,6 +229,9 @@ public:
 
 	inline void SetShowWhitespaces(bool aValue) { mShowWhitespaces = aValue; }
 	inline bool IsShowingWhitespaces() const { return mShowWhitespaces; }
+
+    // Custom Patch for Alchemy Engine
+    void SetLineColor(int aLine, PaletteIndex aColor);
 
 	void SetTabSize(int aValue);
 	inline int GetTabSize() const { return mTabSize; }
@@ -347,6 +350,9 @@ private:
 	void HandleKeyboardInputs();
 	void HandleMouseInputs();
 	void Render();
+
+    // Custom Patch
+    std::map<int, PaletteIndex> mLineColorOverrides;
 
 	float mLineSpacing;
 	Lines mLines;
